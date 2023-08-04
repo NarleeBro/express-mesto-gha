@@ -17,12 +17,13 @@ mongoose.connect(DB_URL, {
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '64cd37826fd8dd0287c8be73',
+    _id: '64cd4762244dd3312fa99441',
   };
 
   next();
 });
 
 app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 app.listen(PORT);

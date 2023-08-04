@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -6,7 +7,7 @@ module.exports.getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
-module.exports.getUserById = (req, res) => {
+/* module.exports.getUserById = (req, res) => {
   if (req.params.userId.length === 24) {
     User.findById(req.params.userId)
       .then((user) => {
@@ -24,6 +25,23 @@ module.exports.getUserById = (req, res) => {
   } else {
     res.status(400).send({ message: 'Некорректный _id' });
   }
+}; */
+
+module.exports.getUserById = (req, res) => {
+  User.findById(req.params.userId)
+    .orFail()
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((error) => {
+      if (error instanceof mongoose.Error.CastError) {
+        res.status(400).send({ message: `Некорректный _id: ${req.params.userId}` });
+      } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
+        res.status(404).send({ message: `Пользователь по указанному _id: ${req.params.userId} не найден.` });
+      } else {
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
 
 module.exports.addUser = (req, res) => {
