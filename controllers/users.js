@@ -4,7 +4,7 @@ const User = require('../models/user');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка!' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -19,7 +19,7 @@ module.exports.getUserById = (req, res) => {
       } else if (error instanceof mongoose.Error.DocumentNotFoundError) {
         res.status(404).send({ message: `Пользователь по указанному _id: ${req.params.userId} не найден` });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка!' });
       }
     });
 };

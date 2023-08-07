@@ -13,7 +13,7 @@ module.exports.createCard = (req, res) => {
           if (error instanceof mongoose.Error.DocumentNotFoundError) {
             res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
           } else {
-            res.status(500).send({ message: 'На сервере произошла ошибка' });
+            res.status(500).send({ message: 'На сервере произошла ошибка!' });
           }
         });
     })
@@ -21,7 +21,7 @@ module.exports.createCard = (req, res) => {
       if (error instanceof mongoose.Error.ValidationError) {
         res.status(400).send({ message: error.message });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка!' });
       }
     });
 };
@@ -30,7 +30,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка!' }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -45,7 +45,7 @@ module.exports.deleteCard = (req, res) => {
       } else if (error instanceof mongoose.Error.CastError) {
         res.status(400).send({ message: `Некорректный _id карточки: ${req.params.cardId}` });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка!' });
       }
     });
 };
@@ -63,7 +63,7 @@ module.exports.likeCard = (req, res) => {
       } else if (error instanceof mongoose.Error.CastError) {
         res.status(400).send({ message: `Некорректный _id карточки: ${req.params.cardId}` });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка!' });
       }
     });
 };
@@ -81,7 +81,7 @@ module.exports.dislikeCard = (req, res) => {
       } else if (error instanceof mongoose.Error.CastError) {
         res.status(400).send({ message: `Некорректный _id карточки: ${req.params.cardId}` });
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка!' });
       }
     });
 };
