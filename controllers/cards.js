@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const Card = require("../models/card");
-const BadRequestError = require("../errors/BadRequestError");
-const NotFoundError = require("../errors/NotFoundError");
+const mongoose = require('mongoose');
+const Card = require('../models/card');
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -9,11 +9,11 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => {
       Card.findById(card._id)
         .orFail()
-        .populate("owner")
+        .populate('owner')
         .then((data) => res.status(201).send(data))
         .catch((error) => {
           if (error instanceof mongoose.Error.DocumentNotFoundError) {
-            next(new NotFoundError(`Карточка с указанным _id не найдена`));
+            next(new NotFoundError('Карточка с указанным _id не найдена'));
           } else {
             next(error);
           }
@@ -30,7 +30,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .populate(["owner", "likes"])
+    .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch(next);
 };
@@ -39,16 +39,16 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
     .then(() => {
-      res.status(200).send({ message: "Карточка удалена" });
+      res.status(200).send({ message: 'Карточка удалена' });
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         next(
-          new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`)
+          new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`),
         );
       } else if (error instanceof mongoose.Error.CastError) {
         next(
-          new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`)
+          new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`),
         );
       } else {
         next(error);
@@ -60,21 +60,21 @@ module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .orFail()
-    .populate(["owner", "likes"])
+    .populate(['owner', 'likes'])
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         next(
-          new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`)
+          new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`),
         );
       } else if (error instanceof mongoose.Error.CastError) {
         next(
-          new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`)
+          new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`),
         );
       } else {
         next(error);
@@ -86,21 +86,21 @@ module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
-    { new: true }
+    { new: true },
   )
     .orFail()
-    .populate(["owner", "likes"])
+    .populate(['owner', 'likes'])
     .then((card) => {
       res.status(200).send(card);
     })
     .catch((error) => {
       if (error instanceof mongoose.Error.DocumentNotFoundError) {
         next(
-          new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`)
+          new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`),
         );
       } else if (error instanceof mongoose.Error.CastError) {
         next(
-          new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`)
+          new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`),
         );
       } else {
         next(error);
