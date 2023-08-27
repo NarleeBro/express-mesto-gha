@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Card = require('../models/card');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -35,7 +36,7 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.deleteCard = (req, res, next) => {
+/* module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
     .then(() => {
@@ -50,6 +51,36 @@ module.exports.deleteCard = (req, res, next) => {
         next(
           new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`),
         );
+      } else {
+        next(error);
+      }
+    });
+}; */
+
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if (!card.owner.equals(req.user._id)) {
+        throw new ForbiddenError('Карточка другого пользователя');
+      }
+      Card.deleteOne(card)
+        .orFail()
+        .then(() => {
+          res.status(200).send({ message: 'Карточка удалена' });
+        })
+        .catch((error) => {
+          if (error instanceof mongoose.Error.DocumentNotFoundError) {
+            next(new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`));
+          } else if (error instanceof mongoose.Error.CastError) {
+            next(new BadRequestError(`Некорректный _id карточки: ${req.params.cardId}`));
+          } else {
+            next(error);
+          }
+        });
+    })
+    .catch((error) => {
+      if (error.name === 'TypeError') {
+        next(new NotFoundError(`Карточка с _id: ${req.params.cardId} не найдена.`));
       } else {
         next(error);
       }
