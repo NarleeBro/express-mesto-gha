@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const UnAuthorizedError = require('../errors/UnAuthorizedError');
-const { urlRegex } = require('../utils/constants');
+const { urlRegular } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       validate: {
         validator(url) {
-          return urlRegex.test(url);
+          return urlRegular.test(url);
         },
         message: 'Введите URL',
       },
